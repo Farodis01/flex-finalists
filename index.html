@@ -67,13 +67,31 @@ h2{font:600 clamp(26px,4vw,44px)/1.1 Unbounded,sans-serif;letter-spacing:-.02em;
 .more p{margin:0 4px 28px;max-width:62ch;color:var(--mute)}
 .tags{display:flex;gap:8px;flex-wrap:wrap;margin:0 4px 28px}
 .tags span{background:var(--card);border-radius:999px;padding:5px 14px;font-size:13px;font-weight:600}
+.zk-intro{max-width:62ch;color:var(--mute);margin:-12px 0 36px}
+.zk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px}
+.zk-grid div{background:var(--card);border-radius:18px;padding:22px}
+.zk-grid strong{display:block;font:600 20px Unbounded,sans-serif;color:var(--accent);margin-bottom:6px}
+.zk-grid span{color:var(--mute);font-size:15px}
+.zk-play{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.zk-box{background:var(--card);border-radius:18px;padding:26px;display:flex;flex-direction:column;gap:14px}
+.zk-box h3{margin:0;font:600 18px Unbounded,sans-serif}
+.zk-time{font:300 clamp(48px,8vw,84px)/1 Unbounded,sans-serif;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.zk-time.end{color:var(--sun)}
+.zk-bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.zk-bar i{display:block;height:100%;width:100%;background:var(--accent);transform-origin:left;transition:transform 1s linear}
+.zk-row{display:flex;gap:10px;flex-wrap:wrap}
+.zk-box .btn{border:0;cursor:pointer;font-family:inherit}
+.zk-box .btn.s{border:1.5px solid var(--ink);background:none;color:var(--ink)}
+.zk-q{margin:0;font-size:18px;font-weight:600}
+.zk-a{margin:0;color:var(--accent);font-weight:700;display:none}
+.zk-a.show{display:block}
 .contact{text-align:center}
 .contact a.big{display:inline-block;font:300 clamp(24px,6vw,72px)/1.1 Unbounded,sans-serif;letter-spacing:-.03em;text-decoration:none;border-bottom:3px solid var(--sun);transition:color .25s}
 .contact a.big:hover{color:var(--accent)}
 .links{display:flex;gap:26px;justify-content:center;margin-top:34px;flex-wrap:wrap}
 footer{padding:30px 5vw calc(30px + env(safe-area-inset-bottom,0px));text-align:center;color:var(--mute);font-size:14px}
-@media (max-width:760px){.about{grid-template-columns:1fr}nav div a{display:none}h1 .row{white-space:normal}}
-@media (prefers-reduced-motion:reduce){h1 .l{animation:none;transform:none;opacity:1}.track{animation:none}html{scroll-behavior:auto}}
+@media (max-width:760px){.zk-grid,.zk-play{grid-template-columns:1fr}.about{grid-template-columns:1fr}nav div a{display:none}h1 .row{white-space:normal}}
+@media (prefers-reduced-motion:reduce){h1 .l{animation:none;transform:none;opacity:1}.track{animation:none}.zk-bar i{transition:none}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
@@ -82,7 +100,7 @@ footer{padding:30px 5vw calc(30px + env(safe-area-inset-bottom,0px));text-align:
   <div><a href="#about">Biz haqimizda</a><a href="#work">Bosib o'tgan yo'limiz</a><a href="flex/">Zakovat</a><a href="#contact">Aloqa</a>
   <button id="theme" aria-label="Mavzuni almashtirish">◐</button></div>
 </nav>
- 
+
 <header class="hero">
   <canvas id="cv" aria-hidden="true"></canvas>
   <p class="role">Novda school milliy maktabi o'quvchilarimiz. Biz har-doim yuksalamiz </p>
@@ -92,7 +110,7 @@ footer{padding:30px 5vw calc(30px + env(safe-area-inset-bottom,0px));text-align:
   </h1>
   <div class="cta"><a class="btn p" href="#work">Natijalarimizni koʻrish</a><a class="btn s" href="#contact">Bogʻlanish</a><a class="btn z" href="flex/">Zakovat bo'limiga o'tish →</a></div>
 </header>
- 
+
 <section id="about" class="about">
   <div>
     <h2>Biz haqimizda</h2>
@@ -104,16 +122,46 @@ footer{padding:30px 5vw calc(30px + env(safe-area-inset-bottom,0px));text-align:
     <div><strong>100%</strong>mas’uliyat bilan</div>
   </div>
 </section>
- 
+
 <section class="band" aria-label="Texnologiyalar">
   <div class="track" id="track"></div>
 </section>
- 
+
 <section id="work">
   <h2>Biz bosib o'tgan yolimiz :</h2>
   <div id="list"></div>
 </section>
- 
+
+<section id="zakovat">
+  <h2>Zakovat</h2>
+  <p class="zk-intro">Zakovat — jamoaviy intellektual o‘yin. Savolga birgalikda javob izlaymiz: mantiq, keng bilim va tez fikrlash shu yerda kerak bo‘ladi.</p>
+  <div class="zk-grid">
+    <div><strong>Jamoa</strong><span>Bir jamoa bo‘lib o‘ylaymiz va yakuniy javobni birgalikda tanlaymiz.</span></div>
+    <div><strong>60 soniya</strong><span>Savol o‘qilgach, muhokama va javob berish uchun vaqt cheklangan.</span></div>
+    <div><strong>Mantiq</strong><span>Faqat yodlash emas — topqirlik va zakovat ham hal qiladi.</span></div>
+  </div>
+  <div class="zk-play">
+    <div class="zk-box">
+      <h3>Vaqt o‘lchagich</h3>
+      <div class="zk-time" id="zkTime" aria-live="off">01:00</div>
+      <div class="zk-bar"><i id="zkBar"></i></div>
+      <div class="zk-row">
+        <button class="btn p" id="zkStart" type="button">Boshlash</button>
+        <button class="btn s" id="zkReset" type="button">Qayta</button>
+      </div>
+    </div>
+    <div class="zk-box">
+      <h3>Sinab ko‘ring</h3>
+      <p class="zk-q" id="zkQ"></p>
+      <p class="zk-a" id="zkA"></p>
+      <div class="zk-row">
+        <button class="btn p" id="zkShow" type="button">Javobni ko‘rish</button>
+        <button class="btn s" id="zkNext" type="button">Keyingi savol</button>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="contact" class="contact">
   <h2>Birga ishlaymizmi? 
     Telegram guruhimiz :
@@ -121,11 +169,11 @@ footer{padding:30px 5vw calc(30px + env(safe-area-inset-bottom,0px));text-align:
   <a class="big" href="https://t.me/+IaDMKpq8iX0yNjgy">Flex.io</a>
   <div class="links"><a href="#">Telegram</a><a href="#">GitHub</a><a href="#">LinkedIn</a><a href="#">Instagram</a></div>
 </section>
- 
+
 <footer>© 2026 Flex finalists</footer>
- 
+
 <script>
- 
+
 (function(){
   var rows=[["r1","Flex"],["r2","finalists"]],i=0;
   rows.forEach(function(r){
@@ -135,14 +183,14 @@ footer{padding:30px 5vw calc(30px + env(safe-area-inset-bottom,0px));text-align:
     });
   });
 })();
- 
+
 // Marquee
 (function(){
   var t=["IELTS","SAT","Milliy sertifikat","TOEFL","Flex","Novda school","IB"],h="";
   for(var k=0;k<2;k++)t.forEach(function(x){h+="<span>"+x+"</span>"});
   document.getElementById("track").innerHTML=h;
 })();
- 
+
 // Projects
 (function(){
   var P=[
@@ -160,13 +208,43 @@ footer{padding:30px 5vw calc(30px + env(safe-area-inset-bottom,0px));text-align:
     box.appendChild(d);
   });
 })();
- 
+
+// Zakovat
+(function(){
+  var Q=[
+    ["Qaysi oylarda 28 kun bor?","Barcha oylarda."],
+    ["Nima har doim oldinda, lekin hech qachon ko‘rinmaydi?","Ertangi kun."],
+    ["Qanchalik ko‘p olsangiz, shunchalik ko‘p qoladi. Bu nima?","Iz (qadamlar izi)."],
+    ["Bir soatda necha marta 15 daqiqa bor?","To‘rt marta (60 : 15 = 4)."]
+  ],qi=-1,qe=document.getElementById("zkQ"),ae=document.getElementById("zkA");
+  function next(){qi=(qi+1)%Q.length;qe.textContent=Q[qi][0];ae.textContent=Q[qi][1];ae.classList.remove("show")}
+  document.getElementById("zkNext").addEventListener("click",next);
+  document.getElementById("zkShow").addEventListener("click",function(){ae.classList.toggle("show")});
+  next();
+  var T=60,left=T,id=null,te=document.getElementById("zkTime"),bar=document.getElementById("zkBar"),sb=document.getElementById("zkStart");
+  function paint(){
+    var m=Math.floor(left/60),s=left%60;
+    te.textContent=(m<10?"0":"")+m+":"+(s<10?"0":"")+s;
+    te.classList.toggle("end",left===0);
+    bar.style.transform="scaleX("+(left/T)+")";
+  }
+  function stop(){clearInterval(id);id=null;sb.textContent="Boshlash"}
+  sb.addEventListener("click",function(){
+    if(id){stop();sb.textContent="Davom etish";return}
+    if(left===0)left=T;
+    paint();sb.textContent="To‘xtatish";
+    id=setInterval(function(){left--;paint();if(left<=0){left=0;paint();stop()}},1000);
+  });
+  document.getElementById("zkReset").addEventListener("click",function(){stop();left=T;paint()});
+  paint();
+})();
+
 // Theme
 document.getElementById("theme").addEventListener("click",function(){
   var r=document.documentElement,dark=getComputedStyle(r).colorScheme==="dark";
   r.setAttribute("data-theme",dark?"light":"dark");
 });
- 
+
 // Particles
 (function(){
   var c=document.getElementById("cv"),x=c.getContext("2d"),W,H,ps=[],m={x:-999,y:-999},reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
