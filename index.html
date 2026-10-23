@@ -40,6 +40,7 @@ h1 .mask{display:block;overflow:hidden;padding-bottom:.08em}
 .btn{display:inline-block;padding:14px 26px;border-radius:999px;text-decoration:none;font-weight:700;font-size:15px;transition:transform .2s,background .2s}
 .btn.p{background:var(--ink);color:var(--bg)}
 .btn.s{border:1.5px solid var(--ink)}
+.btn.z{background:var(--sun);color:#0B1030}
 .btn:hover{transform:translateY(-3px)}
 section{padding:12vh 5vw;max-width:1200px;margin:0 auto}
 h2{font:600 clamp(26px,4vw,44px)/1.1 Unbounded,sans-serif;letter-spacing:-.02em;margin:0 0 36px}
@@ -78,10 +79,10 @@ footer{padding:30px 5vw calc(30px + env(safe-area-inset-bottom,0px));text-align:
 <body>
 <nav>
   <b>FF</b>
-  <div><a href="#about">Biz haqimizda</a><a href="#work">Bosib o'tgan yo'limiz</a><a href="#contact">Aloqa</a>
+  <div><a href="#about">Biz haqimizda</a><a href="#work">Bosib o'tgan yo'limiz</a><a href="flex/">Zakovat</a><a href="#contact">Aloqa</a>
   <button id="theme" aria-label="Mavzuni almashtirish">◐</button></div>
 </nav>
-
+ 
 <header class="hero">
   <canvas id="cv" aria-hidden="true"></canvas>
   <p class="role">Novda school milliy maktabi o'quvchilarimiz. Biz har-doim yuksalamiz </p>
@@ -89,9 +90,9 @@ footer{padding:30px 5vw calc(30px + env(safe-area-inset-bottom,0px));text-align:
     <span class="mask"><span class="row" id="r1"></span></span>
     <span class="mask"><span class="row" id="r2"></span></span>
   </h1>
-  <div class="cta"><a class="btn p" href="#work">Natijalarimizni koʻrish</a><a class="btn s" href="#contact">Bogʻlanish</a></div>
+  <div class="cta"><a class="btn p" href="#work">Natijalarimizni koʻrish</a><a class="btn s" href="#contact">Bogʻlanish</a><a class="btn z" href="flex/">Zakovat bo'limiga o'tish →</a></div>
 </header>
-
+ 
 <section id="about" class="about">
   <div>
     <h2>Biz haqimizda</h2>
@@ -103,16 +104,16 @@ footer{padding:30px 5vw calc(30px + env(safe-area-inset-bottom,0px));text-align:
     <div><strong>100%</strong>mas’uliyat bilan</div>
   </div>
 </section>
-
+ 
 <section class="band" aria-label="Texnologiyalar">
   <div class="track" id="track"></div>
 </section>
-
+ 
 <section id="work">
   <h2>Biz bosib o'tgan yolimiz :</h2>
   <div id="list"></div>
 </section>
-
+ 
 <section id="contact" class="contact">
   <h2>Birga ishlaymizmi? 
     Telegram guruhimiz :
@@ -120,11 +121,11 @@ footer{padding:30px 5vw calc(30px + env(safe-area-inset-bottom,0px));text-align:
   <a class="big" href="https://t.me/+IaDMKpq8iX0yNjgy">Flex.io</a>
   <div class="links"><a href="#">Telegram</a><a href="#">GitHub</a><a href="#">LinkedIn</a><a href="#">Instagram</a></div>
 </section>
-
+ 
 <footer>© 2026 Flex finalists</footer>
-
+ 
 <script>
-
+ 
 (function(){
   var rows=[["r1","Flex"],["r2","finalists"]],i=0;
   rows.forEach(function(r){
@@ -134,14 +135,14 @@ footer{padding:30px 5vw calc(30px + env(safe-area-inset-bottom,0px));text-align:
     });
   });
 })();
-
+ 
 // Marquee
 (function(){
   var t=["IELTS","SAT","Milliy sertifikat","TOEFL","Flex","Novda school","IB"],h="";
   for(var k=0;k<2;k++)t.forEach(function(x){h+="<span>"+x+"</span>"});
   document.getElementById("track").innerHTML=h;
 })();
-
+ 
 // Projects
 (function(){
   var P=[
@@ -159,13 +160,13 @@ footer{padding:30px 5vw calc(30px + env(safe-area-inset-bottom,0px));text-align:
     box.appendChild(d);
   });
 })();
-
+ 
 // Theme
 document.getElementById("theme").addEventListener("click",function(){
   var r=document.documentElement,dark=getComputedStyle(r).colorScheme==="dark";
   r.setAttribute("data-theme",dark?"light":"dark");
 });
-
+ 
 // Particles
 (function(){
   var c=document.getElementById("cv"),x=c.getContext("2d"),W,H,ps=[],m={x:-999,y:-999},reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
