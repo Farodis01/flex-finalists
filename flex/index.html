@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Flex.io/zakovat</title>
+<style>
+:root{--bg:#070b24;--card:#0e1538;--line:#222c63;--tx:#e9ecff;--mut:#8a93c8;--a:#00e0ff;--b:#8b5cf6;--g:#ffc857;--err:#ff6b81;--ok:#3ddc97;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;color:var(--tx);background:var(--bg);
+background-image:radial-gradient(circle at 20% 0%,rgba(139,92,246,.25),transparent 40%),radial-gradient(circle at 90% 100%,rgba(0,224,255,.18),transparent 40%),radial-gradient(rgba(120,140,255,.18) 1px,transparent 1px);
+background-size:auto,auto,22px 22px;background-attachment:fixed}
+.wrap{max-width:920px;margin:0 auto;padding:20px}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.logo{font-weight:800;font-size:22px}
+.logo span{background:linear-gradient(90deg,var(--a),var(--b));-webkit-background-clip:text;background-clip:text;color:transparent}
+button{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:12px 20px;font-weight:700;color:#06102b;background:linear-gradient(90deg,var(--a),var(--b));transition:transform .15s,box-shadow .15s}
+button:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,224,255,.3)}
+button.ghost{background:transparent;color:var(--tx);border:1px solid var(--line)}
+button.ghost:hover{box-shadow:none;border-color:var(--a)}
+button.sm{padding:8px 12px;font-size:13px}
+.hero{text-align:center;padding:80px 10px 60px}
+.hero h1{font-size:clamp(36px,8vw,68px);margin:0 0 14px;line-height:1.05}
+.hero h1 span{background:linear-gradient(90deg,var(--a),var(--b),var(--g));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--mut);font-size:18px;max-width:520px;margin:0 auto 30px}
+.card{background:rgba(14,21,56,.88);border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:18px}
+input,textarea{width:100%;background:#080d2b;border:1px solid var(--line);border-radius:10px;padding:12px;color:var(--tx);font:inherit;margin:6px 0 14px}
+input:focus,textarea:focus{outline:2px solid var(--a);border-color:transparent}
+label{font-size:13px;color:var(--mut)}
+.modal{position:fixed;inset:0;background:rgba(2,4,18,.75);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}
+.modal.open{display:flex}
+.modal .card{width:100%;max-width:380px;margin:0}
+.err{color:var(--err);font-size:14px;min-height:20px;margin-bottom:8px}
+.code{font-weight:800;letter-spacing:4px;color:var(--g)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.item{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:14px;border:1px solid var(--line);border-radius:12px;margin-top:10px;background:#0a1030}
+.item.sel{border-color:var(--a)}
+.item small{color:var(--mut)}
+.hide{display:none}
+#join{text-align:center;padding:30px 0 50px}
+#join .card{max-width:480px;margin:0 auto}
+#join input{text-align:center;font-size:24px;letter-spacing:6px;text-transform:uppercase}
+.qbox{text-align:center;padding:10px}
+.qbox .n{color:var(--a);font-weight:700}
+.qbox .t{font-size:clamp(20px,4vw,30px);margin:14px 0;line-height:1.35}
+.qbox .ans{font-size:22px;color:var(--ok);font-weight:700;min-height:30px}
+.timer{font-size:44px;font-weight:800;color:var(--g)}
+.teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.team{border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center;background:#0a1030}
+.team .nm{font-weight:700;margin-bottom:4px}
+.team .sc{font-size:46px;font-weight:800;background:linear-gradient(90deg,var(--a),var(--g));-webkit-background-clip:text;background-clip:text;color:transparent}
+.team .row{justify-content:center}
+.minus{background:linear-gradient(90deg,#ff6b81,#ff9f6b)}
+.plus{background:linear-gradient(90deg,#3ddc97,#00e0ff)}
+.team button{padding:8px 18px;font-size:20px}
+.team input,.team textarea{margin:4px 0 6px;font-size:14px;padding:8px;text-align:center}
+.team input{font-weight:700;font-size:16px;letter-spacing:0;text-transform:none}
+.team textarea{text-align:left;resize:vertical;margin-top:10px;margin-bottom:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+ <div class="logo"><span>Flex.io</span>/zakovat</div>
+ <div id="topbtn"></div>
+</header>
+
+<!-- ADMIN PANEL -->
+<section id="dash" class="hide">
+ <h2>Testlarni boshqarish</h2>
+ <div class="card">
+  <h3 style="margin-top:0">Yangi test yaratish</h3>
+  <div class="row">
+   <div style="flex:2;min-width:160px"><label>Test nomi</label><input id="tn" placeholder="Masalan: 1-test"></div>
+   <div style="flex:1;min-width:140px"><label>Test paroli</label><input id="tc" placeholder="Bo’sh = avtomatik"></div>
+  </div>
+  <button onclick="addTest()">Test yaratish</button>
+ </div>
+ <div class="card">
+  <h3 style="margin-top:0">Testlarim (<span id="tcnt">0</span>)</h3>
+  <div id="tlist"></div>
+ </div>
+ <div class="card hide" id="qpanel">
+  <h3 style="margin-top:0">Savollar: <span id="qtitle" style="color:var(--a)"></span></h3>
+  <label>Savol matni</label>
+  <textarea id="qt" rows="3" placeholder="Savolni yozing..."></textarea>
+  <div class="row">
+   <div style="flex:2;min-width:160px"><label>Javob</label><input id="qa" placeholder="To’g’ri javob"></div>
+   <div style="flex:1;min-width:100px"><label>Vaqt (soniya)</label><input id="qs" type="number" value="60" min="5"></div>
+  </div>
+  <button onclick="addQ()">Savol qo’shish</button>
+  <div id="qlist"></div>
+ </div>
+ <div style="text-align:center"><button class="ghost sm" onclick="logout()">Chiqish</button></div>
+</section>
+
+<!-- PUBLIC PAGE -->
+<section id="home">
+ <div class="hero">
+  <h1>Aqlingni <span>sina</span>,<br>zakovatda yut!</h1>
+  <p>Test parolini kiriting va zakovatni boshlang.</p>
+  <div class="row" style="justify-content:center">
+   <button onclick="document.getElementById('join').scrollIntoView()">Parol kiritish ↓</button>
+   <button class="ghost" onclick="openLogin()">Akkauntga kirish</button>
+  </div>
+ </div>
+
+ <div id="join">
+  <div class="card">
+   <h2 style="margin-top:0">Zakovat parolini kiriting</h2>
+   <input id="jc" placeholder="PAROL" onkeydown="if(event.key==='Enter')join()">
+   <div class="err" id="jerr"></div>
+   <button onclick="join()">Testni ochish</button>
+  </div>
+ </div>
+
+ <div id="game" class="hide">
+  <div class="card">
+   <div class="row" style="justify-content:space-between">
+    <h2 style="margin:0" id="gtitle"></h2>
+    <button class="ghost sm" onclick="leave()">Testni yopish</button>
+   </div>
+  </div>
+
+  <div class="card">
+   <h3 style="margin-top:0">Jamoalar</h3>
+   <div class="row">
+    <div style="width:150px"><label>Jamoalar soni</label><input id="tcount" type="number" min="1" max="30" value="4" style="margin:6px 0"></div>
+    <button onclick="makeTeams()" style="margin-top:20px">Jamoalarni yaratish</button>
+    <button class="ghost" onclick="resetScores()" style="margin-top:20px">Ballarni 0 qilish</button>
+   </div>
+   <div class="teams" id="teams" style="margin-top:16px"></div>
+  </div>
+
+  <div class="card qbox">
+   <div class="n" id="qn"></div>
+   <div class="t" id="qtext"></div>
+   <div class="timer" id="timer"></div>
+   <div class="ans" id="ans"></div>
+   <div class="row" style="justify-content:center;margin-top:14px">
+    <button class="ghost" onclick="step(-1)">← Oldingi</button>
+    <button onclick="startTimer()">Vaqtni boshlash</button>
+    <button class="ghost" onclick="showAns()">Javobni ko’rsatish</button>
+    <button class="ghost" onclick="step(1)">Keyingi →</button>
+   </div>
+  </div>
+ </div>
+</div>
+</div>
+
+<div class="modal" id="modal">
+ <div class="card">
+  <h2 style="margin-top:0">Akkauntga kirish</h2>
+  <label>Login</label>
+  <input id="lg" autocomplete="username" placeholder="Login">
+  <label>Parol</label>
+  <input id="pw" type="password" autocomplete="current-password" placeholder="Parol" onkeydown="if(event.key==='Enter')login()">
+  <div class="err" id="err"></div>
+  <div class="row"><button onclick="login()">Kirish</button><button class="ghost" onclick="closeLogin()">Bekor qilish</button></div>
+ </div>
+</div>
+
+<script>
+var LOGIN="farodis.flex.io",PASS="03112011";
+var mem={};
+function sg(k,d){try{var v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return k in mem?mem[k]:d}}
+function ss(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+var tests=sg("zk_tests",[]),selId=null,cur=null,teams=[],qi=0,tm=null;
+
+/* ---- login / admin ---- */
+function openLogin(){$("modal").classList.add("open");$("err").textContent="";$("lg").focus()}
+function closeLogin(){$("modal").classList.remove("open")}
+function login(){
+ if($("lg").value.trim()===LOGIN&&$("pw").value===PASS){ss("zk_in",true);closeLogin();$("pw").value="";show()}
+ else $("err").textContent="Login yoki parol noto’g’ri!"
+}
+function logout(){ss("zk_in",false);show()}
+function show(){
+ var on=sg("zk_in",false);
+ $("home").classList.toggle("hide",on);$("dash").classList.toggle("hide",!on);
+ $("topbtn").innerHTML=on?'<span style="color:var(--mut)">'+LOGIN+'</span>':'<button class="ghost sm" onclick="openLogin()">Akkauntga kirish</button>';
+ if(on)renderAdmin()
+}
+function genCode(){var c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",s="";for(var i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s}
+function addTest(){
+ var n=$("tn").value.trim()||("Test "+(tests.length+1)),c=($("tc").value.trim()||genCode()).toUpperCase();
+ if(tests.some(function(t){return t.code===c})){alert("Bu parol band, boshqasini tanlang.");return}
+ var t={id:"t"+Date.now(),name:n,code:c,qs:[]};tests.push(t);ss("zk_tests",tests);
+ $("tn").value="";$("tc").value="";selId=t.id;renderAdmin()
+}
+function selTest(id){selId=id;renderAdmin()}
+function delTest(id){if(!confirm("Test o’chirilsinmi?"))return;tests=tests.filter(function(t){return t.id!==id});ss("zk_tests",tests);if(selId===id)selId=null;renderAdmin()}
+function sel(){return tests.filter(function(t){return t.id===selId})[0]}
+function addQ(){
+ var t=sel(),q=$("qt").value.trim(),a=$("qa").value.trim(),s=parseInt($("qs").value)||60;
+ if(!t||!q||!a)return;
+ t.qs.push({t:q,a:a,s:s});ss("zk_tests",tests);$("qt").value="";$("qa").value="";renderAdmin()
+}
+function delQ(i){sel().qs.splice(i,1);ss("zk_tests",tests);renderAdmin()}
+function renderAdmin(){
+ $("tcnt").textContent=tests.length;
+ $("tlist").innerHTML=tests.length?tests.map(function(t){return '<div class="item'+(t.id===selId?' sel':'')+'"><div><b>'+esc(t.name)+'</b><br><small>Parol: <span class="code">'+esc(t.code)+'</span> · '+t.qs.length+' ta savol</small></div><div class="row"><button class="ghost sm" onclick="selTest(\''+t.id+'\')">Savollar</button><button class="ghost sm" onclick="delTest(\''+t.id+'\')">O’chirish</button></div></div>'}).join(""):'<small style="color:var(--mut)">Hozircha test yo’q.</small>';
+ var t=sel();$("qpanel").classList.toggle("hide",!t);
+ if(t){$("qtitle").textContent=t.name;
+  $("qlist").innerHTML=t.qs.map(function(q,i){return '<div class="item"><div><b style="color:var(--a)">'+(i+1)+'.</b> '+esc(q.t)+'<br><small>Javob: '+esc(q.a)+' · '+q.s+' soniya</small></div><button class="ghost sm" onclick="delQ('+i+')">O’chirish</button></div>'}).join("")}
+}
+
+/* ---- public: open test by password ---- */
+function join(){
+ var c=$("jc").value.trim().toUpperCase();
+ var t=tests.filter(function(x){return x.code===c})[0];
+ if(!t){$("jerr").textContent="Bunday parolli test topilmadi!";return}
+ $("jerr").textContent="";cur=t;qi=0;teams=sg("zk_teams_"+t.id,[]);
+ $("gtitle").textContent=t.name;$("game").classList.remove("hide");
+ renderTeams();renderQ();$("game").scrollIntoView()
+}
+function leave(){clearInterval(tm);cur=null;$("game").classList.add("hide");$("jc").value="";$("join").scrollIntoView()}
+function saveTeams(){ss("zk_teams_"+cur.id,teams)}
+function makeTeams(){
+ var n=Math.max(1,Math.min(30,parseInt($("tcount").value)||1));
+ teams=[];for(var i=1;i<=n;i++)teams.push({n:"Jamoa "+i,s:0,m:""});
+ saveTeams();renderTeams()
+}
+function pt(i,d){teams[i].s+=d;saveTeams();renderTeams()}
+function setTeam(i,k,v){teams[i][k]=v;saveTeams()}
+function resetScores(){teams.forEach(function(t){t.s=0});saveTeams();renderTeams()}
+function renderTeams(){
+ $("teams").innerHTML=teams.length?teams.map(function(t,i){return '<div class="team"><input value="'+esc(t.n)+'" oninput="setTeam('+i+',\'n\',this.value)" placeholder="Jamoa nomi"><div class="sc">'+t.s+'</div><div class="row"><button class="minus" onclick="pt('+i+',-1)">−1</button><button class="plus" onclick="pt('+i+',1)">+1</button></div><textarea rows="3" oninput="setTeam('+i+',\'m\',this.value)" placeholder="Jamoa a’zolari ismlari...">'+esc(t.m||"")+'</textarea></div>'}).join(""):'<small style="color:var(--mut)">Jamoalar sonini kiriting va yarating.</small>'
+}
+function renderQ(){
+ clearInterval(tm);$("timer").textContent="";$("ans").textContent="";
+ var q=cur.qs[qi];
+ if(!q){$("qn").textContent="";$("qtext").textContent="Bu testda savollar yo’q.";return}
+ $("qn").textContent="Savol "+(qi+1)+" / "+cur.qs.length;$("qtext").textContent=q.t;$("timer").textContent=q.s
+}
+function step(d){var n=qi+d;if(n<0||n>=cur.qs.length)return;qi=n;renderQ()}
+function showAns(){var q=cur.qs[qi];if(q)$("ans").textContent="Javob: "+q.a}
+function startTimer(){
+ var q=cur.qs[qi];if(!q)return;clearInterval(tm);var s=q.s;$("timer").textContent=s;
+ tm=setInterval(function(){s--;$("timer").textContent=s;if(s<=0){clearInterval(tm);$("timer").textContent="Vaqt tugadi!"}},1000)
+}
+show();
+</script>
+</body>
+</html>

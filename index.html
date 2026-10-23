@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Flex finalists – Novda school</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@200..900&family=Manrope:wght@400..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F4FF;--ink:#0B1030;--mute:#5A6088;--line:#C9CEEE;--accent:#3B5BFF;--sun:#FFB81F;--card:#E6EAFF;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0A0E26;--ink:#EEF0FF;--mute:#9AA1D6;--line:#262C5A;--accent:#7C93FF;--sun:#FFC83D;--card:#121847;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0A0E26;--ink:#EEF0FF;--mute:#9AA1D6;--line:#262C5A;--accent:#7C93FF;--sun:#FFC83D;--card:#121847;color-scheme:dark}
+html{scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.65 Manrope,system-ui,sans-serif;overflow-x:hidden}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+nav{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:calc(16px + env(safe-area-inset-top,0px)) 5vw 16px;background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:blur(10px)}
+nav b{font:600 15px Unbounded,sans-serif}
+nav div{display:flex;gap:22px;align-items:center;font-size:15px}
+nav a{text-decoration:none;color:var(--mute);transition:color .2s}
+nav a:hover{color:var(--ink)}
+#theme{border:1px solid var(--line);background:none;color:var(--ink);width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:16px}
+.hero{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding:120px 5vw 8vh}
+#cv{position:absolute;inset:0;width:100%;height:100%}
+.hero>*:not(canvas){position:relative;pointer-events:none}
+.hero a,.hero button{pointer-events:auto}
+.role{font-size:clamp(16px,2vw,20px);color:var(--mute);margin:0 0 18px;max-width:34ch}
+h1{margin:0;font-family:Unbounded,sans-serif;font-weight:300;line-height:.95;letter-spacing:-.03em;font-size:clamp(40px,10.5vw,170px)}
+h1 .row{display:block;white-space:nowrap}
+h1 .l{display:inline-block;transform:translateY(110%) rotate(8deg);opacity:0;animation:up .9s cubic-bezier(.2,.9,.2,1) forwards;animation-delay:calc(var(--i)*55ms + 200ms);transition:font-weight .35s,color .35s;pointer-events:auto}
+h1 .l:hover{font-weight:900;color:var(--accent)}
+h1 .mask{display:block;overflow:hidden;padding-bottom:.08em}
+@keyframes up{to{transform:none;opacity:1}}
+.cta{display:flex;gap:14px;margin-top:34px;flex-wrap:wrap}
+.btn{display:inline-block;padding:14px 26px;border-radius:999px;text-decoration:none;font-weight:700;font-size:15px;transition:transform .2s,background .2s}
+.btn.p{background:var(--ink);color:var(--bg)}
+.btn.s{border:1.5px solid var(--ink)}
+.btn:hover{transform:translateY(-3px)}
+section{padding:12vh 5vw;max-width:1200px;margin:0 auto}
+h2{font:600 clamp(26px,4vw,44px)/1.1 Unbounded,sans-serif;letter-spacing:-.02em;margin:0 0 36px}
+.about{display:grid;grid-template-columns:1.3fr 1fr;gap:6vw}
+.about p{margin:0 0 18px;max-width:60ch}
+.facts{display:grid;gap:14px;align-content:start}
+.facts div{background:var(--card);border-radius:18px;padding:20px 22px}
+.facts strong{display:block;font:600 30px Unbounded,sans-serif;color:var(--accent)}
+.band{overflow:hidden;border-block:1px solid var(--line);padding:22px 0;max-width:none}
+.track{display:flex;gap:56px;width:max-content;animation:mq 28s linear infinite;font:500 clamp(22px,3.4vw,38px) Unbounded,sans-serif}
+.track span::after{content:"✦";color:var(--sun);margin-left:56px}
+.band:hover .track{animation-play-state:paused}
+@keyframes mq{to{transform:translateX(-50%)}}
+.proj{border-top:1px solid var(--line)}
+.proj button{all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:26px 4px;font:500 clamp(20px,3vw,32px) Unbounded,sans-serif;transition:padding .3s,color .3s}
+.proj button:hover{padding-left:20px;color:var(--accent)}
+.proj button:focus-visible{outline:3px solid var(--sun)}
+.proj small{font:500 14px Manrope,sans-serif;color:var(--mute)}
+.proj i{font-style:normal;transition:transform .35s;font-size:26px}
+.proj[open] i,.proj.open i{transform:rotate(45deg)}
+.more{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s}
+.more>div{overflow:hidden}
+.proj.open .more{grid-template-rows:1fr}
+.more p{margin:0 4px 28px;max-width:62ch;color:var(--mute)}
+.tags{display:flex;gap:8px;flex-wrap:wrap;margin:0 4px 28px}
+.tags span{background:var(--card);border-radius:999px;padding:5px 14px;font-size:13px;font-weight:600}
+.contact{text-align:center}
+.contact a.big{display:inline-block;font:300 clamp(24px,6vw,72px)/1.1 Unbounded,sans-serif;letter-spacing:-.03em;text-decoration:none;border-bottom:3px solid var(--sun);transition:color .25s}
+.contact a.big:hover{color:var(--accent)}
+.links{display:flex;gap:26px;justify-content:center;margin-top:34px;flex-wrap:wrap}
+footer{padding:30px 5vw calc(30px + env(safe-area-inset-bottom,0px));text-align:center;color:var(--mute);font-size:14px}
+@media (max-width:760px){.about{grid-template-columns:1fr}nav div a{display:none}h1 .row{white-space:normal}}
+@media (prefers-reduced-motion:reduce){h1 .l{animation:none;transform:none;opacity:1}.track{animation:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<nav>
+  <b>FF</b>
+  <div><a href="#about">Biz haqimizda</a><a href="#work">Bosib o'tgan yo'limiz</a><a href="#contact">Aloqa</a>
+  <button id="theme" aria-label="Mavzuni almashtirish">◐</button></div>
+</nav>
+
+<header class="hero">
+  <canvas id="cv" aria-hidden="true"></canvas>
+  <p class="role">Novda school milliy maktabi o'quvchilarimiz. Biz har-doim yuksalamiz </p>
+  <h1 aria-label="Flex finalists">
+    <span class="mask"><span class="row" id="r1"></span></span>
+    <span class="mask"><span class="row" id="r2"></span></span>
+  </h1>
+  <div class="cta"><a class="btn p" href="#work">Natijalarimizni koʻrish</a><a class="btn s" href="#contact">Bogʻlanish</a></div>
+</header>
+
+<section id="about" class="about">
+  <div>
+    <h2>Biz haqimizda</h2>
+    <p>Salom, biz Novda school milliy maktab o'quvchilarimiz. Har bir buyuk daraxt va mustahkam ildiz kichik bir novdadan boshlanadi. Biz — Novda School o‘quvchilarimiz va bu nom ostida birlashgan yoshlar jamoasimiz!</p>
+  </div>
+  <div class="facts">
+    <div><strong>3+</strong>yillik tajriba</div>
+    <div><strong>20+</strong>tugallangan loyiha</div>
+    <div><strong>100%</strong>mas’uliyat bilan</div>
+  </div>
+</section>
+
+<section class="band" aria-label="Texnologiyalar">
+  <div class="track" id="track"></div>
+</section>
+
+<section id="work">
+  <h2>Biz bosib o'tgan yolimiz :</h2>
+  <div id="list"></div>
+</section>
+
+<section id="contact" class="contact">
+  <h2>Birga ishlaymizmi? 
+    Telegram guruhimiz :
+  </h2>
+  <a class="big" href="https://t.me/+IaDMKpq8iX0yNjgy">Flex.io</a>
+  <div class="links"><a href="#">Telegram</a><a href="#">GitHub</a><a href="#">LinkedIn</a><a href="#">Instagram</a></div>
+</section>
+
+<footer>© 2026 Flex finalists</footer>
+
+<script>
+
+(function(){
+  var rows=[["r1","Flex"],["r2","finalists"]],i=0;
+  rows.forEach(function(r){
+    var el=document.getElementById(r[0]);
+    r[1].split("").forEach(function(ch){
+      var s=document.createElement("span");s.className="l";s.textContent=ch;s.style.setProperty("--i",i++);s.setAttribute("aria-hidden","true");el.appendChild(s);
+    });
+  });
+})();
+
+// Marquee
+(function(){
+  var t=["IELTS","SAT","Milliy sertifikat","TOEFL","Flex","Novda school","IB"],h="";
+  for(var k=0;k<2;k++)t.forEach(function(x){h+="<span>"+x+"</span>"});
+  document.getElementById("track").innerHTML=h;
+})();
+
+// Projects
+(function(){
+  var P=[
+    ["IELTS, Flex va boshqa dasturlariga tayyorgarlik ko'rish yili","2026-2027","Har doim, maqsadlarimiz sari qadam bosamiz",["IELTS","SAT","Flex"]],
+    ["CEFR, IELTS va boshqa sertifikatlardan yaxshi natijalarni qo'lga kiritish yili","2025-2026","Asosiy maqsad — shunchaki sertifikat yig‘ish emas, balki haqiqiy bilim va ko‘nikmalarni rivojlantirish.",[]],
+    ["Sertifikatlarga tayyorlanish","2024-2025","Tajriba oshirish va sertifikatlarga tayyorlanish.",[]],
+    ["Maktabga kirish","2024","Yangi maktabga o'tish, u yerdagilar bilan tanishish va muhitiga moslashish yili.",[]]
+  ],box=document.getElementById("list");
+  P.forEach(function(p,n){
+    var d=document.createElement("div");d.className="proj";
+    d.innerHTML='<button aria-expanded="false" aria-controls="m'+n+'"><span>'+p[0]+' <small>'+p[1]+'</small></span><i>+</i></button>'+
+      '<div class="more" id="m'+n+'"><div><p>'+p[2]+'</p><div class="tags">'+p[3].map(function(x){return"<span>"+x+"</span>"}).join("")+'</div></div></div>';
+    var b=d.querySelector("button");
+    b.addEventListener("click",function(){var o=d.classList.toggle("open");b.setAttribute("aria-expanded",o)});
+    box.appendChild(d);
+  });
+})();
+
+// Theme
+document.getElementById("theme").addEventListener("click",function(){
+  var r=document.documentElement,dark=getComputedStyle(r).colorScheme==="dark";
+  r.setAttribute("data-theme",dark?"light":"dark");
+});
+
+// Particles
+(function(){
+  var c=document.getElementById("cv"),x=c.getContext("2d"),W,H,ps=[],m={x:-999,y:-999},reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
+  function size(){var d=devicePixelRatio||1;W=c.clientWidth;H=c.clientHeight;c.width=W*d;c.height=H*d;x.setTransform(d,0,0,d,0,0);
+    var n=Math.min(90,Math.floor(W*H/14000));ps=[];for(var i=0;i<n;i++)ps.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5})}
+  size();addEventListener("resize",size);
+  addEventListener("pointermove",function(e){var r=c.getBoundingClientRect();m.x=e.clientX-r.left;m.y=e.clientY-r.top});
+  function col(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
+  function draw(){
+    x.clearRect(0,0,W,H);var a=col("--accent"),s=col("--sun");
+    ps.forEach(function(p,i){
+      var dx=p.x-m.x,dy=p.y-m.y,d=Math.hypot(dx,dy);
+      if(d<140&&d>0){p.x+=dx/d*1.6;p.y+=dy/d*1.6}
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;
+      x.fillStyle=d<140?s:a;x.beginPath();x.arc(p.x,p.y,d<140?3:2,0,7);x.fill();
+      for(var j=i+1;j<ps.length;j++){
+        var q=ps[j],l=Math.hypot(p.x-q.x,p.y-q.y);
+        if(l<120){x.globalAlpha=(1-l/120)*.5;x.strokeStyle=a;x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke();x.globalAlpha=1}
+      }
+    });
+    if(!reduce)requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+</body>
+</html>
