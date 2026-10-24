@@ -65,7 +65,7 @@ label{font-size:13px;color:var(--mut)}
  <div class="logo"><span>Flex.io</span>/zakovat</div>
  <div id="topbtn"></div>
 </header>
-
+ 
 <!-- ADMIN PANEL -->
 <section id="dash" class="hide">
  <h2>Testlarni boshqarish</h2>
@@ -94,7 +94,7 @@ label{font-size:13px;color:var(--mut)}
  </div>
  <div style="text-align:center"><button class="ghost sm" onclick="logout()">Chiqish</button></div>
 </section>
-
+ 
 <!-- PUBLIC PAGE -->
 <section id="home">
  <div class="hero">
@@ -105,7 +105,7 @@ label{font-size:13px;color:var(--mut)}
    <button class="ghost" onclick="openLogin()">Akkauntga kirish</button>
   </div>
  </div>
-
+ 
  <div id="join">
   <div class="card">
    <h2 style="margin-top:0">Zakovat parolini kiriting</h2>
@@ -114,7 +114,7 @@ label{font-size:13px;color:var(--mut)}
    <button onclick="join()">Testni ochish</button>
   </div>
  </div>
-
+ 
  <div id="game" class="hide">
   <div class="card">
    <div class="row" style="justify-content:space-between">
@@ -122,7 +122,7 @@ label{font-size:13px;color:var(--mut)}
     <button class="ghost sm" onclick="leave()">Testni yopish</button>
    </div>
   </div>
-
+ 
   <div class="card">
    <h3 style="margin-top:0">Jamoalar</h3>
    <div class="row">
@@ -132,7 +132,7 @@ label{font-size:13px;color:var(--mut)}
    </div>
    <div class="teams" id="teams" style="margin-top:16px"></div>
   </div>
-
+ 
   <div class="card qbox">
    <div class="n" id="qn"></div>
    <div class="t" id="qtext"></div>
@@ -148,7 +148,7 @@ label{font-size:13px;color:var(--mut)}
  </div>
 </div>
 </div>
-
+ 
 <div class="modal" id="modal">
  <div class="card">
   <h2 style="margin-top:0">Akkauntga kirish</h2>
@@ -160,16 +160,33 @@ label{font-size:13px;color:var(--mut)}
   <div class="row"><button onclick="login()">Kirish</button><button class="ghost" onclick="closeLogin()">Bekor qilish</button></div>
  </div>
 </div>
-
+ 
 <script>
 var LOGIN="farodis.flex.io",PASS="03112011";
-var mem={};
-function sg(k,d){try{var v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return k in mem?mem[k]:d}}
-function ss(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+var SB_URL="SHU_YERGA_SUPABASE_URL",SB_KEY="SHU_YERGA_ANON_KEY";
+var mem={},timers={};
+var H={"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY};
+function sg(k,d){try{var v=localStorage.getItem(k);return v===null?(k in mem?mem[k]:d):JSON.parse(v)}catch(e){return k in mem?mem[k]:d}}
+function push(k,v){
+ clearTimeout(timers[k]);
+ timers[k]=setTimeout(function(){
+  fetch(SB_URL+"/rest/v1/kv",{method:"POST",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Content-Type":"application/json","Prefer":"resolution=merge-duplicates"},body:JSON.stringify({key:k,value:v})}).catch(function(){})
+ },400)
+}
+function ss(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}if(k!=="zk_in")push(k,v)}
+async function pull(){
+ try{
+  var r=await fetch(SB_URL+"/rest/v1/kv?select=key,value",{headers:H});
+  if(!r.ok)return;
+  var rows=await r.json();
+  rows.forEach(function(x){mem[x.key]=x.value;try{localStorage.setItem(x.key,JSON.stringify(x.value))}catch(e){}});
+  tests=sg("zk_tests",[]);
+ }catch(e){}
+}
 function $(i){return document.getElementById(i)}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 var tests=sg("zk_tests",[]),selId=null,cur=null,teams=[],qi=0,tm=null;
-
+ 
 /* ---- login / admin ---- */
 function openLogin(){$("modal").classList.add("open");$("err").textContent="";$("lg").focus()}
 function closeLogin(){$("modal").classList.remove("open")}
@@ -207,9 +224,10 @@ function renderAdmin(){
  if(t){$("qtitle").textContent=t.name;
   $("qlist").innerHTML=t.qs.map(function(q,i){return '<div class="item"><div><b style="color:var(--a)">'+(i+1)+'.</b> '+esc(q.t)+'<br><small>Javob: '+esc(q.a)+' · '+q.s+' soniya</small></div><button class="ghost sm" onclick="delQ('+i+')">O’chirish</button></div>'}).join("")}
 }
-
+ 
 /* ---- public: open test by password ---- */
-function join(){
+async function join(){
+ await pull();
  var c=$("jc").value.trim().toUpperCase();
  var t=tests.filter(function(x){return x.code===c})[0];
  if(!t){$("jerr").textContent="Bunday parolli test topilmadi!";return}
@@ -243,6 +261,7 @@ function startTimer(){
  tm=setInterval(function(){s--;$("timer").textContent=s;if(s<=0){clearInterval(tm);$("timer").textContent="Vaqt tugadi!"}},1000)
 }
 show();
+pull().then(function(){if(sg("zk_in",false))renderAdmin()});
 </script>
 </body>
 </html>
