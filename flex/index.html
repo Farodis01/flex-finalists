@@ -25,8 +25,8 @@ button.sm{padding:8px 12px;font-size:13px}
 .hero h1 span{background:linear-gradient(90deg,var(--a),var(--b),var(--g));-webkit-background-clip:text;background-clip:text;color:transparent}
 .hero p{color:var(--mut);font-size:18px;max-width:520px;margin:0 auto 30px}
 .card{background:rgba(14,21,56,.88);border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:18px}
-input,textarea{width:100%;background:#080d2b;border:1px solid var(--line);border-radius:10px;padding:12px;color:var(--tx);font:inherit;margin:6px 0 14px}
-input:focus,textarea:focus{outline:2px solid var(--a);border-color:transparent}
+input,textarea,select{width:100%;background:#080d2b;border:1px solid var(--line);border-radius:10px;padding:12px;color:var(--tx);font:inherit;margin:6px 0 14px}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--a);border-color:transparent}
 label{font-size:13px;color:var(--mut)}
 .modal{position:fixed;inset:0;background:rgba(2,4,18,.75);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}
 .modal.open{display:flex}
@@ -57,6 +57,14 @@ label{font-size:13px;color:var(--mut)}
 .team input,.team textarea{margin:4px 0 6px;font-size:14px;padding:8px;text-align:center}
 .team input{font-weight:700;font-size:16px;letter-spacing:0;text-transform:none}
 .team textarea{text-align:left;resize:vertical;margin-top:10px;margin-bottom:0}
+
+/* ---- A/B/C/D test ---- */
+.tag{display:inline-block;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-left:6px;color:#06102b;background:var(--g)}
+.tag.t{background:var(--a)}
+.qopts{display:grid;gap:10px;max-width:560px;margin:14px auto;text-align:left}
+.qo{border:1px solid var(--line);border-radius:12px;padding:12px 16px;background:#0a1030;font-size:18px}
+.qo b{color:var(--a);margin-right:8px}
+.qo.ok{border-color:var(--ok);background:rgba(61,220,151,.15)}
 
 .modal .card.big{max-width:1100px;max-height:94vh;overflow:auto}
 .cg{display:grid;grid-template-columns:1.5fr 1fr;gap:18px;align-items:start}
@@ -108,8 +116,17 @@ a.fin:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,200,87,.3)
   <h3 style="margin-top:0">Savollar: <span id="qtitle" style="color:var(--a)"></span></h3>
   <label>Savol matni</label>
   <textarea id="qt" rows="3" placeholder="Savolni yozing..."></textarea>
+  <label>Savol turi</label>
+  <select id="qk" onchange="kindUI()"><option value="w">Yozma ish (ochiq javob)</option><option value="t">Test (variantlar)</option></select>
+  <div id="opts" class="hide">
+   <label>Variantlar (kamida 2 ta)</label>
+   <input id="o0" placeholder="A variant"><input id="o1" placeholder="B variant">
+   <input id="o2" placeholder="C variant (ixtiyoriy)"><input id="o3" placeholder="D variant (ixtiyoriy)">
+   <label>To’g’ri variant</label>
+   <select id="qc"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select>
+  </div>
   <div class="row">
-   <div style="flex:2;min-width:160px"><label>Javob</label><input id="qa" placeholder="To’g’ri javob"></div>
+   <div id="wans" style="flex:2;min-width:160px"><label>Javob</label><input id="qa" placeholder="To’g’ri javob"></div>
    <div style="flex:1;min-width:100px"><label>Vaqt (soniya)</label><input id="qs" type="number" value="60" min="5"></div>
   </div>
   <button onclick="addQ()">Savol qo’shish</button>
@@ -162,6 +179,7 @@ a.fin:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,200,87,.3)
   <div class="card qbox">
    <div class="n" id="qn"></div>
    <div class="t" id="qtext"></div>
+   <div class="qopts hide" id="qopt"></div>
    <div class="timer" id="timer"></div>
    <div class="ans" id="ans"></div>
    <div class="row" style="justify-content:center;margin-top:14px">
@@ -222,6 +240,7 @@ async function pull(){
 function $(i){return document.getElementById(i)}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 var tests=sg("zk_tests",[]),selId=null,cur=null,teams=[],qi=0,tm=null;
+var L=["A","B","C","D"];
  
 /* ---- login / admin ---- */
 function openLogin(){$("modal").classList.add("open");$("err").textContent="";$("lg").focus()}
@@ -251,10 +270,26 @@ function delTest(id){
  clearTimeout(pdt);pd=null;tests=tests.filter(function(t){return t.id!==id});ss("zk_tests",tests);if(selId===id)selId=null;renderAdmin()
 }
 function sel(){return tests.filter(function(t){return t.id===selId})[0]}
+function kindUI(){
+ var t=$("qk").value==="t";
+ $("opts").classList.toggle("hide",!t);
+ $("wans").classList.toggle("hide",t)
+}
 function addQ(){
- var t=sel(),q=$("qt").value.trim(),a=$("qa").value.trim(),s=parseInt($("qs").value)||60;
- if(!t||!q||!a)return;
- t.qs.push({t:q,a:a,s:s});ss("zk_tests",tests);$("qt").value="";$("qa").value="";renderAdmin()
+ var t=sel(),q=$("qt").value.trim(),a=$("qa").value.trim(),s=parseInt($("qs").value)||60,k=$("qk").value;
+ if(!t||!q)return;
+ if(k==="t"){
+  var cc=parseInt($("qc").value),o=[],c=-1;
+  [0,1,2,3].forEach(function(i){var v=$("o"+i).value.trim();if(v){if(i===cc)c=o.length;o.push(v)}});
+  if(o.length<2){alert("Kamida 2 ta variant kiriting.");return}
+  if(c<0){alert("To’g’ri variant bo’sh bo’lmasligi kerak.");return}
+  t.qs.push({k:"t",t:q,o:o,c:c,a:o[c],s:s});
+  [0,1,2,3].forEach(function(i){$("o"+i).value=""})
+ }else{
+  if(!a)return;
+  t.qs.push({k:"w",t:q,a:a,s:s})
+ }
+ ss("zk_tests",tests);$("qt").value="";$("qa").value="";renderAdmin()
 }
 function delQ(i){sel().qs.splice(i,1);ss("zk_tests",tests);renderAdmin()}
 function renderAdmin(){
@@ -262,7 +297,7 @@ function renderAdmin(){
  $("tlist").innerHTML=tests.length?tests.map(function(t){return '<div class="item'+(t.id===selId?' sel':'')+'"><div><b>'+esc(t.name)+'</b><br><small>Parol: <span class="code">'+esc(t.code)+'</span> · '+t.qs.length+' ta savol</small></div><div class="row"><button class="ghost sm" onclick="selTest(\''+t.id+'\')">Savollar</button><button class="ghost sm" onclick="delTest(\''+t.id+'\')"'+(pd===t.id?' style="border-color:var(--err);color:var(--err)">Ha, o’chirish':'>O’chirish')+'</button></div></div>'}).join(""):'<small style="color:var(--mut)">Hozircha test yo’q.</small>';
  var t=sel();$("qpanel").classList.toggle("hide",!t);
  if(t){$("qtitle").textContent=t.name;
-  $("qlist").innerHTML=t.qs.map(function(q,i){return '<div class="item"><div><b style="color:var(--a)">'+(i+1)+'.</b> '+esc(q.t)+'<br><small>Javob: '+esc(q.a)+' · '+q.s+' soniya</small></div><button class="ghost sm" onclick="delQ('+i+')">O’chirish</button></div>'}).join("")}
+  $("qlist").innerHTML=t.qs.map(function(q,i){return '<div class="item"><div><b style="color:var(--a)">'+(i+1)+'.</b> '+esc(q.t)+'<span class="tag'+(q.k==="t"?' t':'')+'">'+(q.k==="t"?'TEST':'YOZMA')+'</span><br>'+(q.k==="t"?q.o.map(function(x,j){return '<small>'+L[j]+') '+esc(x)+(j===q.c?' ✔':'')+'</small>'}).join('<br>')+'<br>':'')+'<small>Javob: '+esc(q.a)+' · '+q.s+' soniya</small></div><button class="ghost sm" onclick="delQ('+i+')">O’chirish</button></div>'}).join("")}
 }
  
 /* ---- public: open test by password ---- */
@@ -290,12 +325,23 @@ function renderTeams(){
 }
 function renderQ(){
  clearInterval(tm);$("timer").textContent="";$("ans").textContent="";
- var q=cur.qs[qi];
+ var q=cur.qs[qi],ob=$("qopt");ob.classList.add("hide");ob.innerHTML="";
  if(!q){$("qn").textContent="";$("qtext").textContent="Bu testda savollar yo’q.";return}
- $("qn").textContent="Savol "+(qi+1)+" / "+cur.qs.length;$("qtext").textContent=q.t;$("timer").textContent=q.s
+ $("qn").textContent="Savol "+(qi+1)+" / "+cur.qs.length+" · "+(q.k==="t"?"Test":"Yozma ish");
+ $("qtext").textContent=q.t;$("timer").textContent=q.s;
+ if(q.k==="t"){
+  ob.innerHTML=q.o.map(function(x,j){return '<div class="qo"><b>'+L[j]+')</b>'+esc(x)+'</div>'}).join("");
+  ob.classList.remove("hide")
+ }
 }
 function step(d){var n=qi+d;if(n<0||n>=cur.qs.length)return;qi=n;renderQ()}
-function showAns(){var q=cur.qs[qi];if(q)$("ans").textContent="Javob: "+q.a}
+function showAns(){
+ var q=cur.qs[qi];if(!q)return;
+ if(q.k==="t"){
+  $("ans").textContent="Javob: "+L[q.c]+") "+q.a;
+  var el=$("qopt").children;if(el[q.c])el[q.c].classList.add("ok")
+ }else $("ans").textContent="Javob: "+q.a
+}
 function startTimer(){
  var q=cur.qs[qi];if(!q)return;clearInterval(tm);var s=q.s;$("timer").textContent=s;
  tm=setInterval(function(){s--;$("timer").textContent=s;if(s<=0){clearInterval(tm);$("timer").textContent="Vaqt tugadi!"}},1000)
