@@ -129,10 +129,13 @@ label{font-size:13px;color:var(--mut)}
     <div style="width:150px"><label>Jamoalar soni</label><input id="tcount" type="number" min="1" max="30" value="4" style="margin:6px 0"></div>
     <button onclick="makeTeams()" style="margin-top:20px">Jamoalarni yaratish</button>
     <button class="ghost" onclick="resetScores()" style="margin-top:20px">Ballarni 0 qilish</button>
+    <button class="plus" onclick="openCert(-1)" style="margin-top:20px">🏆 G’olibga sertifikat</button>
    </div>
    <div class="teams" id="teams" style="margin-top:16px"></div>
   </div>
  
+  <div class="card hide" id="icard"><div class="row" style="justify-content:space-between;margin-bottom:12px"><h3 style="margin:0">🏆 Sertifikat</h3><div class="row"><button class="sm" onclick="window.print()">Chop etish / PDF</button><button class="ghost sm" onclick="$('icard').classList.add('hide')">Yopish</button></div></div><div id="cert2"></div></div>
+  <div class="emo" id="emo"><div class="pn" id="epn"></div><button class="tg" onclick="$('emo').classList.toggle('open')" title="Emotsiyalar">😊</button></div>
   <div class="card qbox">
    <div class="n" id="qn"></div>
    <div class="t" id="qtext"></div>
@@ -158,6 +161,16 @@ label{font-size:13px;color:var(--mut)}
   <input id="pw" type="password" autocomplete="current-password" placeholder="Parol" onkeydown="if(event.key==='Enter')login()">
   <div class="err" id="err"></div>
   <div class="row"><button onclick="login()">Kirish</button><button class="ghost" onclick="closeLogin()">Bekor qilish</button></div>
+ </div>
+</div>
+ 
+<div class="modal" id="cm">
+ <div class="card big">
+  <div class="row" style="justify-content:space-between;margin-bottom:12px">
+   <h2 style="margin:0">🏆 Sertifikat</h2>
+   <div class="row"><button class="sm" onclick="window.print()">Chop etish / PDF</button><button class="ghost sm" onclick="resetCert()">Standartga qaytarish</button><button class="ghost sm" onclick="$('cm').classList.remove('open')">Yopish</button></div>
+  </div>
+  <div class="cg"><div id="cert"></div><div id="cf"></div></div>
  </div>
 </div>
  
@@ -209,7 +222,11 @@ function addTest(){
  $("tn").value="";$("tc").value="";selId=t.id;renderAdmin()
 }
 function selTest(id){selId=id;renderAdmin()}
-function delTest(id){if(!confirm("Test o’chirilsinmi?"))return;tests=tests.filter(function(t){return t.id!==id});ss("zk_tests",tests);if(selId===id)selId=null;renderAdmin()}
+var pd=null,pdt;
+function delTest(id){
+ if(pd!==id){pd=id;clearTimeout(pdt);pdt=setTimeout(function(){pd=null;renderAdmin()},4000);renderAdmin();return}
+ clearTimeout(pdt);pd=null;tests=tests.filter(function(t){return t.id!==id});ss("zk_tests",tests);if(selId===id)selId=null;renderAdmin()
+}
 function sel(){return tests.filter(function(t){return t.id===selId})[0]}
 function addQ(){
  var t=sel(),q=$("qt").value.trim(),a=$("qa").value.trim(),s=parseInt($("qs").value)||60;
@@ -219,7 +236,7 @@ function addQ(){
 function delQ(i){sel().qs.splice(i,1);ss("zk_tests",tests);renderAdmin()}
 function renderAdmin(){
  $("tcnt").textContent=tests.length;
- $("tlist").innerHTML=tests.length?tests.map(function(t){return '<div class="item'+(t.id===selId?' sel':'')+'"><div><b>'+esc(t.name)+'</b><br><small>Parol: <span class="code">'+esc(t.code)+'</span> · '+t.qs.length+' ta savol</small></div><div class="row"><button class="ghost sm" onclick="selTest(\''+t.id+'\')">Savollar</button><button class="ghost sm" onclick="delTest(\''+t.id+'\')">O’chirish</button></div></div>'}).join(""):'<small style="color:var(--mut)">Hozircha test yo’q.</small>';
+ $("tlist").innerHTML=tests.length?tests.map(function(t){return '<div class="item'+(t.id===selId?' sel':'')+'"><div><b>'+esc(t.name)+'</b><br><small>Parol: <span class="code">'+esc(t.code)+'</span> · '+t.qs.length+' ta savol</small></div><div class="row"><button class="ghost sm" onclick="selTest(\''+t.id+'\')">Savollar</button><button class="ghost sm" onclick="delTest(\''+t.id+'\')"'+(pd===t.id?' style="border-color:var(--err);color:var(--err)">Ha, o’chirish':'>O’chirish')+'</button></div></div>'}).join(""):'<small style="color:var(--mut)">Hozircha test yo’q.</small>';
  var t=sel();$("qpanel").classList.toggle("hide",!t);
  if(t){$("qtitle").textContent=t.name;
   $("qlist").innerHTML=t.qs.map(function(q,i){return '<div class="item"><div><b style="color:var(--a)">'+(i+1)+'.</b> '+esc(q.t)+'<br><small>Javob: '+esc(q.a)+' · '+q.s+' soniya</small></div><button class="ghost sm" onclick="delQ('+i+')">O’chirish</button></div>'}).join("")}
@@ -246,7 +263,7 @@ function pt(i,d){teams[i].s+=d;saveTeams();renderTeams()}
 function setTeam(i,k,v){teams[i][k]=v;saveTeams()}
 function resetScores(){teams.forEach(function(t){t.s=0});saveTeams();renderTeams()}
 function renderTeams(){
- $("teams").innerHTML=teams.length?teams.map(function(t,i){return '<div class="team"><input value="'+esc(t.n)+'" oninput="setTeam('+i+',\'n\',this.value)" placeholder="Jamoa nomi"><div class="sc">'+t.s+'</div><div class="row"><button class="minus" onclick="pt('+i+',-1)">−1</button><button class="plus" onclick="pt('+i+',1)">+1</button></div><textarea rows="3" oninput="setTeam('+i+',\'m\',this.value)" placeholder="Jamoa a’zolari ismlari...">'+esc(t.m||"")+'</textarea></div>'}).join(""):'<small style="color:var(--mut)">Jamoalar sonini kiriting va yarating.</small>'
+ $("teams").innerHTML=teams.length?teams.map(function(t,i){return '<div class="team"><input value="'+esc(t.n)+'" oninput="setTeam('+i+',\'n\',this.value)" placeholder="Jamoa nomi"><div class="sc">'+t.s+'</div><div class="row"><button class="minus" onclick="pt('+i+',-1)">−1</button><button class="plus" onclick="pt('+i+',1)">+1</button></div><textarea rows="3" oninput="setTeam('+i+',\'m\',this.value)" placeholder="Jamoa a’zolari ismlari...">'+esc(t.m||"")+'</textarea><button class="ghost sm" style="margin-top:8px" onclick="openInline('+i+')">🏆 Sertifikat</button></div>'}).join(""):'<small style="color:var(--mut)">Jamoalar sonini kiriting va yarating.</small>'
 }
 function renderQ(){
  clearInterval(tm);$("timer").textContent="";$("ans").textContent="";
@@ -260,6 +277,60 @@ function startTimer(){
  var q=cur.qs[qi];if(!q)return;clearInterval(tm);var s=q.s;$("timer").textContent=s;
  tm=setInterval(function(){s--;$("timer").textContent=s;if(s<=0){clearInterval(tm);$("timer").textContent="Vaqt tugadi!"}},1000)
 }
+ 
+/* ---- sertifikat ---- */
+var CF=[["title","Sarlavha","text"],["sub","Kichik matn","text"],["place","O’rin / unvon","text"],["tn","Jamoa nomi","text"],["mem","Ishtirokchilar (har biri yangi qatorda)","area"],["body","Asosiy matn","area"],["date","Sana","text"],["signer","Imzo egasi","text"],["role","Lavozimi","text"],["bg","Orqa fon rangi","color"],["bd","Hoshiya rangi","color"],["ac","Sarlavha rangi","color"],["tx","Matn rangi","color"],["bdw","Hoshiya qalinligi (1–10)","num"],["font","Shrift","font"]];
+var FONTS=[["Georgia,serif","Georgia (klassik)"],["'Segoe UI',Arial,sans-serif","Segoe UI (zamonaviy)"],["'Times New Roman',serif","Times New Roman"],["'Brush Script MT',cursive","Qo’lyozma"],["Impact,sans-serif","Qalin (Impact)"]];
+var CD={title:"SERTIFIKAT",sub:"Ushbu sertifikat quyidagi jamoaga topshiriladi",place:"1-o’rin sohibi",body:"Zakovat o’yinida ko’rsatgan yuksak bilim va g’alabasi uchun taqdirlanadi.",date:new Date().toLocaleDateString("en-GB"),signer:"Farodis",role:"Tashkilotchi",bg:"#fffaf0",bd:"#c9a227",ac:"#8b5cf6",tx:"#222244",bdw:6,font:"Georgia,serif"};
+var cs=Object.assign({tn:"",mem:""},CD,sg("zk_cert",{}));
+function saveCert(){var o={};for(var k in cs)if(k!=="tn"&&k!=="mem")o[k]=cs[k];ss("zk_cert",o)}
+function openCert(i){
+ if(!cur||!teams.length){alert("Avval jamoalarni yarating.");return}
+ if(i<0){i=0;teams.forEach(function(t,j){if(t.s>teams[i].s)i=j})}
+ cs.tn=teams[i].n;cs.mem=teams[i].m||"";
+ renderCF();drawCert();$("icard").classList.add("hide");$("cm").classList.add("open")
+}
+function cf(k,v){cs[k]=k==="bdw"?(parseFloat(v)||1):v;if(k!=="tn"&&k!=="mem")saveCert();drawCert()}
+function resetCert(){cs=Object.assign({},CD,{tn:cs.tn,mem:cs.mem});saveCert();renderCF();drawCert()}
+function renderCF(){
+ $("cf").innerHTML=CF.map(function(f){
+  var k=f[0],v=cs[k],h='<label>'+f[1]+'</label>';
+  if(f[2]==="area")return h+'<textarea rows="4" oninput="cf(\''+k+'\',this.value)">'+esc(v)+'</textarea>';
+  if(f[2]==="font")return h+'<select oninput="cf(\'font\',this.value)" style="width:100%;padding:12px;margin:6px 0 14px;border-radius:10px;background:#080d2b;color:var(--tx);border:1px solid var(--line)">'+FONTS.map(function(x){return '<option value="'+x[0]+'"'+(x[0]===v?' selected':'')+'>'+x[1]+'</option>'}).join("")+'</select>';
+  return h+'<input type="'+(f[2]==="num"?"number\" min=\"1\" max=\"10":f[2])+'" value="'+esc(v)+'" oninput="cf(\''+k+'\',this.value)">'
+ }).join("")
+}
+function drawCert(id){var E=$(id||"cert");
+ var m=cs.mem.split("\n").map(function(x){return x.trim()}).filter(Boolean);
+ E.style.cssText="background:"+cs.bg+";color:"+cs.tx+";font-family:"+cs.font;
+ E.innerHTML='<div class="ci" style="border:'+(cs.bdw*0.4)+'cqw solid '+cs.bd+'"><div class="ci2" style="border:0.25cqw solid '+cs.ac+'">'
+ +'<div><div style="font-size:6.5cqw;font-weight:800;letter-spacing:.6cqw;color:'+cs.ac+'">'+esc(cs.title)+'</div>'
+ +'<div style="font-size:1.9cqw;margin-top:1cqw">'+esc(cs.sub)+'</div></div>'
+ +'<div><div style="font-size:2.4cqw;color:'+cs.bd+';font-weight:700">'+esc(cs.place)+'</div>'
+ +'<div style="font-size:5.5cqw;font-weight:800;margin:.8cqw 0">'+esc(cs.tn)+'</div>'
+ +'<div style="font-size:2cqw;display:flex;flex-wrap:wrap;gap:.5cqw 2cqw;justify-content:center">'+m.map(function(x){return '<span>'+esc(x)+'</span>'}).join("")+'</div></div>'
+ +'<div style="font-size:2.1cqw;max-width:75%">'+esc(cs.body)+'</div>'
+ +'<div style="display:flex;justify-content:space-between;width:100%;font-size:1.8cqw;align-items:flex-end"><div>'+esc(cs.date)+'</div><div><div style="font-weight:700;font-size:2.2cqw;border-top:.2cqw solid '+cs.tx+';padding-top:.5cqw;min-width:20cqw">'+esc(cs.signer)+'</div>'+esc(cs.role)+'</div></div>'
+ +'</div></div>'
+}
+ 
+ 
+function openInline(i){
+ if(!cur||!teams.length)return;
+ cs.tn=teams[i].n;cs.mem=teams[i].m||"";
+ $("cm").classList.remove("open");$("icard").classList.remove("hide");
+ drawCert("cert2");$("icard").scrollIntoView({behavior:"smooth"})
+}
+/* ---- emotsiyalar ---- */
+var EM=["👏","🔥","😂","😮","😍","🤔","😢","🎉","💪","👍","😡","🙏"];
+$("epn").innerHTML=EM.map(function(e){return '<button onclick="emo(\''+e+'\')">'+e+'</button>'}).join("");
+function emo(e){
+ for(var i=0;i<6;i++)(function(i){setTimeout(function(){
+  var d=document.createElement("div");d.className="fly";d.textContent=e;
+  d.style.right=(5+Math.random()*30)+"vw";document.body.appendChild(d);
+  setTimeout(function(){d.remove()},2300)},i*120)})(i)
+}
+ 
 show();
 pull().then(function(){if(sg("zk_in",false))renderAdmin()});
 </script>
