@@ -431,6 +431,58 @@ function emo(e){
   setTimeout(function(){d.remove()},2300)},i*120)})(i)
 }
 
+ var L=["A","B","C","D"];
+
+// Savol turini almashtirganda: variantlar yoki javob maydonini ko'rsatadi
+function kindUI(){
+ var t=$("qk").value==="t";
+ $("opts").classList.toggle("hide",!t);
+ $("wans").classList.toggle("hide",t)
+}
+
+// Savol qo'shish
+function addQ(){
+ var t=sel(),q=$("qt").value.trim(),a=$("qa").value.trim(),s=parseInt($("qs").value)||60,k=$("qk").value;
+ if(!t||!q)return;
+ if(k==="t"){
+  var cc=parseInt($("qc").value),o=[],c=-1;
+  [0,1,2,3].forEach(function(i){
+   var v=$("o"+i).value.trim();
+   if(v){if(i===cc)c=o.length;o.push(v)}
+  });
+  if(o.length<2){alert("Kamida 2 ta variant kiriting.");return}
+  if(c<0){alert("To’g’ri variant bo’sh bo’lmasligi kerak.");return}
+  t.qs.push({k:"t",t:q,o:o,c:c,a:o[c],s:s});
+  [0,1,2,3].forEach(function(i){$("o"+i).value=""})
+ }else{
+  if(!a)return;
+  t.qs.push({k:"w",t:q,a:a,s:s})
+ }
+ ss("zk_tests",tests);$("qt").value="";$("qa").value="";renderAdmin()
+}
+
+// O'yinda savolni chiqarish
+function renderQ(){
+ clearInterval(tm);$("timer").textContent="";$("ans").textContent="";
+ var q=cur.qs[qi],ob=$("qopt");ob.classList.add("hide");ob.innerHTML="";
+ if(!q){$("qn").textContent="";$("qtext").textContent="Bu testda savollar yo’q.";return}
+ $("qn").textContent="Savol "+(qi+1)+" / "+cur.qs.length+" · "+(q.k==="t"?"Test":"Yozma ish");
+ $("qtext").textContent=q.t;$("timer").textContent=q.s;
+ if(q.k==="t"){
+  ob.innerHTML=q.o.map(function(x,j){return '<div class="qo"><b>'+L[j]+')</b>'+esc(x)+'</div>'}).join("");
+  ob.classList.remove("hide")
+ }
+}
+
+// Javobni ko'rsatish
+function showAns(){
+ var q=cur.qs[qi];if(!q)return;
+ if(q.k==="t"){
+  $("ans").textContent="Javob: "+L[q.c]+") "+q.a;
+  var el=$("qopt").children;if(el[q.c])el[q.c].classList.add("ok")
+ }else $("ans").textContent="Javob: "+q.a
+}
+
 show();
 pull().then(function(){if(sg("zk_in",false))renderAdmin()});
 </script>
