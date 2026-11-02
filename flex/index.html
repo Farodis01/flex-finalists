@@ -88,6 +88,23 @@ label{font-size:13px;color:var(--mut)}
 @media print{.emo{display:none}}
 a.fin{text-decoration:none;font-weight:700;border-radius:12px;padding:8px 14px;font-size:13px;color:#06102b;background:linear-gradient(90deg,var(--g),var(--a));display:inline-block;transition:transform .15s,box-shadow .15s}
 a.fin:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,200,87,.3)}
+ 
+/* ---- natijalar (admin) ---- */
+.rt{border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:14px;background:#0a1030}
+.rh{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.rh small,.mut{color:var(--mut)}
+.rr{position:relative;display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;margin-top:8px;overflow:hidden;background:rgba(14,21,56,.9)}
+.rr .bar{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,rgba(0,224,255,.22),rgba(139,92,246,.12));z-index:0;transition:width .5s}
+.rr>*:not(.bar){position:relative;z-index:1}
+.rr .pl{min-width:46px;text-align:center;font-weight:800;font-size:20px;color:var(--mut)}
+.rr .pl.md{font-size:30px}
+.rr .inf{flex:1;min-width:0}
+.rr .inf b{display:block;overflow-wrap:anywhere}
+.rr .inf small{color:var(--mut);display:block;overflow-wrap:anywhere}
+.rr .pt{font-size:28px;font-weight:800;background:linear-gradient(90deg,var(--a),var(--g));-webkit-background-clip:text;background-clip:text;color:transparent}
+.rr.p1{border-color:var(--g);box-shadow:0 0 22px rgba(255,200,87,.18)}
+.rr.p2{border-color:#c0c8e0}
+.rr.p3{border-color:#d08b52}
 </style>
 </head>
 <body>
@@ -111,6 +128,10 @@ a.fin:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,200,87,.3)
  <div class="card">
   <h3 style="margin-top:0">Testlarim (<span id="tcnt">0</span>)</h3>
   <div id="tlist"></div>
+ </div>
+ <div class="card hide" id="rescard">
+  <h3 style="margin-top:0">📊 Natijalar: <span id="rtitle" style="color:var(--a)"></span></h3>
+  <div id="reslist"></div>
  </div>
  <div class="card hide" id="qpanel">
   <h3 style="margin-top:0">Savollar: <span id="qtitle" style="color:var(--a)"></span></h3>
@@ -294,10 +315,33 @@ function addQ(){
 function delQ(i){sel().qs.splice(i,1);ss("zk_tests",tests);renderAdmin()}
 function renderAdmin(){
  $("tcnt").textContent=tests.length;
- $("tlist").innerHTML=tests.length?tests.map(function(t){return '<div class="item'+(t.id===selId?' sel':'')+'"><div><b>'+esc(t.name)+'</b><br><small>Parol: <span class="code">'+esc(t.code)+'</span> · '+t.qs.length+' ta savol</small></div><div class="row"><button class="ghost sm" onclick="selTest(\''+t.id+'\')">Savollar</button><button class="ghost sm" onclick="delTest(\''+t.id+'\')"'+(pd===t.id?' style="border-color:var(--err);color:var(--err)">Ha, o’chirish':'>O’chirish')+'</button></div></div>'}).join(""):'<small style="color:var(--mut)">Hozircha test yo’q.</small>';
+ $("tlist").innerHTML=tests.length?tests.map(function(t){return '<div class="item'+(t.id===selId?' sel':'')+'" style="cursor:pointer" onclick="selTest(\''+t.id+'\')"><div><b>'+esc(t.name)+'</b><br><small>Parol: <span class="code">'+esc(t.code)+'</span> · '+t.qs.length+' ta savol</small></div><div class="row"><button class="ghost sm" onclick="event.stopPropagation();selTest(\''+t.id+'\')">Savollar</button><button class="ghost sm" onclick="event.stopPropagation();delTest(\''+t.id+'\')"'+(pd===t.id?' style="border-color:var(--err);color:var(--err)">Ha, o’chirish':'>O’chirish')+'</button></div></div>'}).join(""):'<small style="color:var(--mut)">Hozircha test yo’q.</small>';
  var t=sel();$("qpanel").classList.toggle("hide",!t);
  if(t){$("qtitle").textContent=t.name;
   $("qlist").innerHTML=t.qs.map(function(q,i){return '<div class="item"><div><b style="color:var(--a)">'+(i+1)+'.</b> '+esc(q.t)+'<span class="tag'+(q.k==="t"?' t':'')+'">'+(q.k==="t"?'TEST':'YOZMA')+'</span><br>'+(q.k==="t"?q.o.map(function(x,j){return '<small>'+L[j]+') '+esc(x)+(j===q.c?' ✔':'')+'</small>'}).join('<br>')+'<br>':'')+'<small>Javob: '+esc(q.a)+' · '+q.s+' soniya</small></div><button class="ghost sm" onclick="delQ('+i+')">O’chirish</button></div>'}).join("")}
+ renderResults()
+}
+ 
+/* ---- natijalar (admin) ---- */
+function renderResults(){
+ var el=$("reslist"),t=sel();if(!el)return;
+ $("rescard").classList.toggle("hide",!t);
+ if(!t){el.innerHTML="";return}
+ $("rtitle").textContent=t.name;
+ var MD=["🥇","🥈","🥉"],tt=sg("zk_teams_"+t.id,[]);
+ var h='<div class="rh"><small>Parol: <span class="code">'+esc(t.code)+'</span> · '+tt.length+' ta jamoa</small></div>';
+ if(!tt.length){el.innerHTML=h+'<small class="mut">Bu test bo’yicha hali natija yo’q.</small>';return}
+ var r=tt.map(function(x,i){return {n:x.n,s:x.s,m:x.m||"",i:i}}).sort(function(a,b){return b.s-a.s||a.i-b.i});
+ var mx=Math.max.apply(null,r.map(function(x){return x.s})),p=0;
+ r.forEach(function(x,i){
+  if(i===0||x.s!==r[i-1].s)p=i+1;
+  var w=mx>0?Math.max(0,x.s)/mx*100:0;
+  h+='<div class="rr'+(p<=3?' p'+p:'')+'"><div class="bar" style="width:'+w+'%"></div>'
+   +'<div class="pl'+(p<=3?' md':'')+'">'+(p<=3?MD[p-1]:p+'-o’rin')+'</div>'
+   +'<div class="inf"><b>'+esc(x.n)+'</b>'+(x.m.trim()?'<small>'+esc(x.m.replace(/\n+/g,", "))+'</small>':'')+'</div>'
+   +'<div class="pt">'+x.s+'</div></div>'
+ });
+ el.innerHTML=h
 }
  
 /* ---- public: open test by password ---- */
